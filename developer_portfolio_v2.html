@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f; --surface: #111118; --surface2: #1a1a24;
+    --border: rgba(120,120,200,0.15); --accent: #6c63ff; --accent2: #00e5b4;
+    --text: #e8e8f0; --muted: #7a7a9a;
+    --mono: 'Space Mono', monospace; --sans: 'DM Sans', sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 3rem;
+    background: rgba(10,10,15,0.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family: var(--mono); font-size: 1.1rem; color: var(--accent2); }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 1.6rem; list-style: none; flex-wrap: wrap; }
+  .nav-links a { font-size: 0.78rem; color: var(--muted); text-decoration: none; font-family: var(--mono); letter-spacing: 0.5px; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover { color: var(--accent2); }
+
+  section { padding: 5rem 3rem; max-width: 1100px; margin: 0 auto; }
+
+  /* HERO */
+  #hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; padding-top: 3rem; padding-bottom: 3rem; position: relative; }
+  .hero-tag { font-family: var(--mono); font-size: 0.8rem; color: var(--accent2); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.6s 0.1s ease forwards; }
+  h1.hero-name { font-family: var(--mono); font-size: clamp(3rem, 7vw, 6rem); font-weight: 700; line-height: 1.05; letter-spacing: -2px; margin-bottom: 1rem; opacity: 0; animation: fadeUp 0.6s 0.25s ease forwards; }
+  h1.hero-name .accent { color: var(--accent); }
+  h1.hero-name .accent2 { color: var(--accent2); }
+  .hero-sub { font-size: 1.2rem; color: var(--muted); max-width: 520px; line-height: 1.7; margin-bottom: 2.5rem; font-weight: 300; opacity: 0; animation: fadeUp 0.6s 0.4s ease forwards; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s 0.55s ease forwards; }
+  .btn-primary { font-family: var(--mono); font-size: 0.85rem; padding: 0.75rem 1.75rem; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: transform 0.15s, opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-outline { font-family: var(--mono); font-size: 0.85rem; padding: 0.75rem 1.75rem; background: transparent; color: var(--accent2); border: 1px solid var(--accent2); border-radius: 4px; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+  .btn-outline:hover { background: rgba(0,229,180,0.08); transform: translateY(-1px); }
+  .hero-grid-bg { position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent); }
+
+  /* SHARED */
+  .section-divider { border-top: 1px solid var(--border); }
+  .section-label { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 0.75rem; }
+  h2.section-title { font-size: 2.5rem; font-weight: 600; letter-spacing: -1px; margin-bottom: 2.5rem; }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+  .about-text p { color: var(--muted); line-height: 1.9; font-size: 1rem; margin-bottom: 1rem; font-weight: 300; }
+  .about-text p strong { color: var(--text); font-weight: 500; }
+  .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+  .stat-num { font-family: var(--mono); font-size: 2rem; font-weight: 700; color: var(--accent2); }
+  .stat-desc { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+
+  /* INTERNSHIPS */
+  #internships { border-top: 1px solid var(--border); }
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent); }
+  .timeline-item { position: relative; margin-bottom: 2.5rem; }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-dot { position: absolute; left: -2.4rem; top: 0.35rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 2px var(--accent); }
+  .timeline-dot.accent2 { background: var(--accent2); box-shadow: 0 0 0 2px var(--accent2); }
+  .intern-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; transition: border-color 0.2s; }
+  .intern-card:hover { border-color: rgba(108,99,255,0.35); }
+  .intern-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .intern-role { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.2px; }
+  .intern-period { font-family: var(--mono); font-size: 0.72rem; color: var(--accent2); background: rgba(0,229,180,0.08); border: 1px solid rgba(0,229,180,0.2); padding: 0.25rem 0.6rem; border-radius: 3px; white-space: nowrap; }
+  .intern-company { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.75rem; font-weight: 500; }
+  .intern-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.75; font-weight: 300; margin-bottom: 1rem; }
+  .intern-bullets { list-style: none; padding: 0; }
+  .intern-bullets li { font-size: 0.88rem; color: var(--muted); line-height: 1.7; padding-left: 1.1rem; position: relative; margin-bottom: 0.3rem; }
+  .intern-bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 0.7rem; top: 0.15rem; }
+
+  /* PROJECTS */
+  #projects { border-top: 1px solid var(--border); }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+  .project-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.75rem; transition: border-color 0.2s, transform 0.2s; cursor: pointer; position: relative; overflow: hidden; }
+  .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease; }
+  .project-card:hover { border-color: rgba(108,99,255,0.4); transform: translateY(-3px); }
+  .project-card:hover::before { transform: scaleX(1); }
+  .project-number { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 1rem; opacity: 0.7; }
+  .project-name { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.6rem; letter-spacing: -0.3px; }
+  .project-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.25rem; }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tag { font-family: var(--mono); font-size: 0.7rem; padding: 0.25rem 0.6rem; background: rgba(108,99,255,0.1); color: var(--accent); border-radius: 3px; border: 1px solid rgba(108,99,255,0.2); }
+
+  /* SKILLS */
+  #skills { border-top: 1px solid var(--border); }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+  .skill-group { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; }
+  .skill-group-title { font-family: var(--mono); font-size: 0.75rem; color: var(--accent2); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.25rem; }
+  .skill-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.9rem; }
+  .skill-name { font-size: 0.9rem; color: var(--text); }
+  .skill-bar { width: 100px; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .skill-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; width: 0; transition: width 1s ease; }
+
+  /* CONTACT */
+  #contact { border-top: 1px solid var(--border); }
+  .contact-inner { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 3rem; text-align: center; position: relative; overflow: hidden; }
+  .contact-inner::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 400px; height: 200px; background: radial-gradient(ellipse, rgba(108,99,255,0.08), transparent 70%); pointer-events: none; }
+  .contact-heading { font-size: 2rem; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 0.75rem; }
+  .contact-sub { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; font-weight: 300; }
+  .contact-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .contact-link { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); text-decoration: none; padding: 0.6rem 1.25rem; border: 1px solid var(--border); border-radius: 4px; transition: color 0.2s, border-color 0.2s; cursor: pointer; }
+  .contact-link:hover { color: var(--accent2); border-color: var(--accent2); }
+
+  footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); opacity: 0.6; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .scroll-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .scroll-reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 700px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { gap: 1rem; }
+    section { padding: 3.5rem 1.25rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+    h1.hero-name { font-size: 2.8rem; letter-spacing: -1px; }
+    .intern-header { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span>&lt;</span>alex.dev<span>/&gt;</span></div>
+  <ul class="nav-links">
+    <li><a onclick="goTo('about')">about</a></li>
+    <li><a onclick="goTo('internships')">internships</a></li>
+    <li><a onclick="goTo('projects')">projects</a></li>
+    <li><a onclick="goTo('skills')">skills</a></li>
+    <li><a onclick="goTo('contact')">contact</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-tag">// available for work</div>
+  <h1 class="hero-name">Alex<br><span class="accent">Chen</span><span class="accent2">.</span></h1>
+  <p class="hero-sub">Full-stack engineer crafting performant web experiences. I turn complex problems into elegant, scalable code.</p>
+  <div class="hero-cta">
+    <button class="btn-primary" onclick="goTo('projects')">View my work</button>
+    <button class="btn-outline" onclick="goTo('contact')">Get in touch</button>
+  </div>
+</section>
+
+<section id="about" class="section-divider">
+  <div class="scroll-reveal">
+    <div class="section-label">// 01 about</div>
+    <h2 class="section-title">A bit about me</h2>
+  </div>
+  <div class="about-grid scroll-reveal">
+    <div class="about-text">
+      <p>I'm a <strong>full-stack software engineer</strong> with 5+ years of experience building production-grade applications. I specialize in React, Node.js, and cloud infrastructure.</p>
+      <p>I care deeply about <strong>developer experience</strong> and writing code that's not just functional — but readable, maintainable, and built to last. I've shipped products used by hundreds of thousands of people.</p>
+      <p>Outside of code, I enjoy contributing to <strong>open-source</strong>, writing technical blog posts, and hiking in the hills of Pune.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card"><div class="stat-num">5+</div><div class="stat-desc">years of experience</div></div>
+      <div class="stat-card"><div class="stat-num">30+</div><div class="stat-desc">projects shipped</div></div>
+      <div class="stat-card"><div class="stat-num">12</div><div class="stat-desc">open source repos</div></div>
+      <div class="stat-card"><div class="stat-num">∞</div><div class="stat-desc">cups of chai</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="internships">
+  <div class="scroll-reveal">
+    <div class="section-label">// 02 internships</div>
+    <h2 class="section-title">Experience</h2>
+  </div>
+  <div class="timeline scroll-reveal">
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="intern-card">
+        <div class="intern-header">
+          <div class="intern-role">Software Engineering Intern</div>
+          <div class="intern-period">Jun 2023 – Aug 2023</div>
+        </div>
+        <div class="intern-company">Razorpay · Bengaluru, India</div>
+        <p class="intern-desc">Worked on the Payments Platform team, improving developer-facing APIs and internal tooling used by 500k+ merchants.</p>
+        <ul class="intern-bullets">
+          <li>Built a real-time webhook retry dashboard using React and Go, reducing failed webhook investigations by 40%.</li>
+          <li>Optimized SQL queries in the settlements engine, cutting report generation time from 12s to under 2s.</li>
+          <li>Contributed to internal SDK documentation and wrote unit tests with 90% coverage.</li>
+        </ul>
+        <div class="tags" style="margin-top: 1rem;">
+          <span class="tag">Go</span><span class="tag">React</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot accent2"></div>
+      <div class="intern-card">
+        <div class="intern-header">
+          <div class="intern-role">Frontend Developer Intern</div>
+          <div class="intern-period">Dec 2022 – Feb 2023</div>
+        </div>
+        <div class="intern-company">Groww · Remote</div>
+        <p class="intern-desc">Part of the Onboarding squad, building high-conversion flows for new users investing for the first time.</p>
+        <ul class="intern-bullets">
+          <li>Redesigned the KYC upload flow in Next.js, improving completion rate by 18% in A/B testing.</li>
+          <li>Implemented skeleton loaders and optimistic UI patterns that reduced perceived load time significantly.</li>
+          <li>Collaborated with design and PM to ship 3 features within a 10-week sprint cycle.</li>
+        </ul>
+        <div class="tags" style="margin-top: 1rem;">
+          <span class="tag">Next.js</span><span class="tag">TypeScript</span><span class="tag">Figma</span><span class="tag">Jest</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="intern-card">
+        <div class="intern-header">
+          <div class="intern-role">Open Source Contributor (GSOC)</div>
+          <div class="intern-period">May 2022 – Sep 2022</div>
+        </div>
+        <div class="intern-company">Google Summer of Code · Remote</div>
+        <p class="intern-desc">Selected contributor for an open-source observability project under the CNCF umbrella, adding distributed tracing support.</p>
+        <ul class="intern-bullets">
+          <li>Added OpenTelemetry instrumentation across 5 microservices in the reference app.</li>
+          <li>Wrote a 3-part technical blog series documenting the integration, reaching 6k+ readers.</li>
+          <li>Mentored 2 junior contributors in subsequent community calls.</li>
+        </ul>
+        <div class="tags" style="margin-top: 1rem;">
+          <span class="tag">OpenTelemetry</span><span class="tag">Golang</span><span class="tag">Prometheus</span><span class="tag">Kubernetes</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="projects">
+  <div class="scroll-reveal">
+    <div class="section-label">// 03 projects</div>
+    <h2 class="section-title">Selected work</h2>
+  </div>
+  <div class="projects-grid scroll-reveal">
+    <div class="project-card">
+      <div class="project-number">001</div>
+      <div class="project-name">Vektor Analytics</div>
+      <p class="project-desc">Real-time data pipeline and dashboard for e-commerce analytics. Processes 2M+ events/day with sub-second latency.</p>
+      <div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">Kafka</span><span class="tag">PostgreSQL</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-number">002</div>
+      <div class="project-name">Slate CMS</div>
+      <p class="project-desc">Headless CMS with a visual editor, role-based access, and live collaboration. Used by 3 early-stage startups.</p>
+      <div class="tags"><span class="tag">Next.js</span><span class="tag">TypeScript</span><span class="tag">Prisma</span><span class="tag">Redis</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-number">003</div>
+      <div class="project-name">Orbit CLI</div>
+      <p class="project-desc">Open-source developer tool for scaffolding monorepos with pre-configured CI/CD, linting, and testing pipelines.</p>
+      <div class="tags"><span class="tag">Go</span><span class="tag">Shell</span><span class="tag">Docker</span><span class="tag">GitHub Actions</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-number">004</div>
+      <div class="project-name">Nimbus Auth</div>
+      <p class="project-desc">Drop-in authentication service with OAuth2, MFA, and webhooks. Handles 50k+ logins monthly in production.</p>
+      <div class="tags"><span class="tag">Rust</span><span class="tag">AWS Lambda</span><span class="tag">JWT</span><span class="tag">Terraform</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-number">005</div>
+      <div class="project-name">Threads of Code</div>
+      <p class="project-desc">Technical blog with 4k+ monthly readers. Deep dives on distributed systems, TypeScript, and engineering culture.</p>
+      <div class="tags"><span class="tag">Astro</span><span class="tag">MDX</span><span class="tag">Cloudflare</span></div>
+    </div>
+    <div class="project-card">
+      <div class="project-number">006</div>
+      <div class="project-name">SnapAPI</div>
+      <p class="project-desc">API mocking and testing platform for frontend developers. Simulate complex backends with zero backend knowledge.</p>
+      <div class="tags"><span class="tag">Vue 3</span><span class="tag">FastAPI</span><span class="tag">SQLite</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="scroll-reveal">
+    <div class="section-label">// 04 skills</div>
+    <h2 class="section-title">Tech stack</h2>
+  </div>
+  <div class="skills-grid scroll-reveal">
+    <div class="skill-group">
+      <div class="skill-group-title">frontend</div>
+      <div class="skill-item"><span class="skill-name">React / Next.js</span><div class="skill-bar"><div class="skill-fill" data-w="95"></div></div></div>
+      <div class="skill-item"><span class="skill-name">TypeScript</span><div class="skill-bar"><div class="skill-fill" data-w="90"></div></div></div>
+      <div class="skill-item"><span class="skill-name">CSS / Tailwind</span><div class="skill-bar"><div class="skill-fill" data-w="88"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Vue / Nuxt</span><div class="skill-bar"><div class="skill-fill" data-w="70"></div></div></div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">backend</div>
+      <div class="skill-item"><span class="skill-name">Node.js / Express</span><div class="skill-bar"><div class="skill-fill" data-w="92"></div></div></div>
+      <div class="skill-item"><span class="skill-name">PostgreSQL</span><div class="skill-bar"><div class="skill-fill" data-w="85"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Go</span><div class="skill-bar"><div class="skill-fill" data-w="72"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Rust</span><div class="skill-bar"><div class="skill-fill" data-w="55"></div></div></div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-title">infrastructure</div>
+      <div class="skill-item"><span class="skill-name">AWS</span><div class="skill-bar"><div class="skill-fill" data-w="80"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Docker / K8s</span><div class="skill-bar"><div class="skill-fill" data-w="78"></div></div></div>
+      <div class="skill-item"><span class="skill-name">Terraform</span><div class="skill-bar"><div class="skill-fill" data-w="65"></div></div></div>
+      <div class="skill-item"><span class="skill-name">GitHub Actions</span><div class="skill-bar"><div class="skill-fill" data-w="88"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="scroll-reveal">
+    <div class="section-label">// 05 contact</div>
+    <h2 class="section-title">Let's build something</h2>
+  </div>
+  <div class="contact-inner scroll-reveal">
+    <div class="contact-heading">Open to opportunities</div>
+    <p class="contact-sub">I'm currently available for freelance projects and full-time roles. Let's talk.</p>
+    <div class="contact-links">
+      <a class="contact-link">alexchen@email.com</a>
+      <a class="contact-link">github.com/alexchen</a>
+      <a class="contact-link">linkedin.com/in/alexchen</a>
+      <a class="contact-link">@alexchen_dev</a>
+    </div>
+  </div>
+</section>
+
+<footer>built with care &mdash; alex chen &copy; 2026</footer>
+
+<script>
+function goTo(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 80); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+document.querySelectorAll('.skill-fill').forEach(el => {
+  setTimeout(() => { el.style.width = el.dataset.w + '%'; }, 600);
+});
+</script>
+</body>
+</html>
